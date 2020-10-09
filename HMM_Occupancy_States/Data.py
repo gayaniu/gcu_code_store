@@ -2,7 +2,7 @@
 #Author: Gayani Udawatta
 #Created Date : 2019/12/20
 #Modified Data: 2020/02/06
-#Description: Prepare Data in Database
+#Description: Import  Data in Database - All database operations at the initial
 #############################################################################################
 
 
@@ -28,6 +28,7 @@ class Data(object):
 		password = '123.123' 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
+
 		# Insert Dataframe into SQL Server:
 		for index, row in df.iterrows():
 		    cursor.execute("INSERT INTO dbo.Full_Events (id, space_id ,provider_id ,name,space ,type, state,event_date) values(?,?,?,?,?,?,?,?)", row.id, row.space_id ,row.provider_id ,row.name,row.space ,row.type, row.state,row.date )
@@ -44,8 +45,8 @@ class Data(object):
 		password = '123.123' 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
-		# Insert Dataframe into SQL Server:
-		
+
+		# Insert Dataframe into SQL Server:		
 		for index, row in space_data.iterrows():
 			id= row.id
 			name=row.name
@@ -71,8 +72,8 @@ class Data(object):
 		password = '123.123' 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
-		# Insert Dataframe into SQL Server:
-		
+
+		# Insert Dataframe into SQL Server:		
 		for index, row in df.iterrows():			
 			cursor.execute("INSERT INTO dbo.Transit_Points (id, device_id ,space_id, neighbour_space_id ,created_at,updated_at) values(?,?,?,?,?,?)", row.id, row.device_id ,row.space_id, row.neighbour_space_id ,row.created_at,row.updated_at)
 		cnxn.commit()
@@ -91,8 +92,8 @@ class Data(object):
 		password = '123.123' 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
-		#Insert Dataframe into SQL Server:
-		
+
+		#Insert Dataframe into SQL Server:		
 		for index, row in df.iterrows():			
 			cursor.execute("INSERT INTO dbo.Devices (id,	name,	components,	roles,	space_id,	created_at,	updated_at,	domoticz_component_ids,	provider,	provider_id) values(?,?,?,?,?,?,?,?,?,?)", row.id,	row.name,	str(row.components),	str(row.roles),	row.space_id,	str(row.created_at),	str(row.updated_at),	str(row.domoticz_component_ids),	str(row.provider),	str(row.provider_id))
 		cnxn.commit()
@@ -111,8 +112,8 @@ class Data(object):
 		password = '123.123' 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
-		#Insert Dataframe into SQL Server:
-		
+
+		#Insert Dataframe into SQL Server:		
 		for index, row in device_data.iterrows():			
 			cursor.execute("INSERT INTO dbo.All_Devices (id,	name,	components,	roles,	space_id,	created_at,	updated_at,	domoticz_component_ids,	provider,	provider_id, space, component_states ) values(?,?,?,?,?,?,?,?,?,?,?,?)", row.id,	row.name,	str(row.components),	str(row.roles),	row.space_id,	pd.to_datetime(row.created_at),	pd.to_datetime(row.updated_at),	str(row.domoticz_component_ids),	str(row.provider),	str(row.provider_id), str(row.space), str(row.component_states) )
 		cnxn.commit()
@@ -128,13 +129,11 @@ class Data(object):
 		password = '123.123' 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
-		# Insert Dataframe into SQL Server
 
-		print(datetime.datetime.strptime('03:55', '%H:%M').time())
+		# Insert Dataframe into SQL Server
+		#print(datetime.datetime.strptime('03:55', '%H:%M').time())		
 		
 		for index, row in validation_data.iterrows():			
-			#start_time =str(row.StartTime)
-			#end_time= str(row.EndTime)
 			cursor.execute("INSERT INTO dbo.Validation_Facility_data ( Facility_No,  Activity, Day_, Space_, From_, To_ ) values(?,?,?,?,?,?)", row.Facility_No,  row.Activity , row.Day_, row.Space_, row.StartTime, row.EndTime )
 		cnxn.commit()
 		cursor.close()	
@@ -145,8 +144,7 @@ class Data(object):
 		password = '123.123' 
 		conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		#cursor = conn.cursor()
-
-		#cursor.execute("""EXEC [dbo].[SP_Remove_Anomalies] 1, 'kitchen' """)
+		
 		cmd_prod_executesp = """EXEC   [dbo].[Get_Hmm_Validation_Statistics]    """
 		df = pd.read_sql(cmd_prod_executesp, conn)
 
@@ -156,6 +154,6 @@ class Data(object):
 		return df
 
 
-ex = Data()
-print(ex.insert_validationData())
+# ex = Data()
+# print(ex.insert_validationData())
 

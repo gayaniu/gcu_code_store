@@ -1,0 +1,22 @@
+digraph  {
+OCCUPIED_ACTIVE;
+OCCUPIED_INACTIVE;
+UNOCCUPIED;
+UNKNOWN;
+OCCUPIED_ACTIVE -> OCCUPIED_ACTIVE  [key=0, label="0.5", weight="0.5"];
+OCCUPIED_ACTIVE -> OCCUPIED_INACTIVE  [key=0, label="0.2", weight="0.2"];
+OCCUPIED_ACTIVE -> UNOCCUPIED  [key=0, label="0.1", weight="0.1"];
+OCCUPIED_ACTIVE -> UNKNOWN  [key=0, label="0.2", weight="0.2"];
+OCCUPIED_INACTIVE -> OCCUPIED_ACTIVE  [key=0, label="0.3", weight="0.3"];
+OCCUPIED_INACTIVE -> OCCUPIED_INACTIVE  [key=0, label="0.6", weight="0.6"];
+OCCUPIED_INACTIVE -> UNOCCUPIED  [key=0, label="0.0", weight="0.0"];
+OCCUPIED_INACTIVE -> UNKNOWN  [key=0, label="0.1", weight="0.1"];
+UNOCCUPIED -> OCCUPIED_ACTIVE  [key=0, label="0.1", weight="0.1"];
+UNOCCUPIED -> OCCUPIED_INACTIVE  [key=0, label="0.0", weight="0.0"];
+UNOCCUPIED -> UNOCCUPIED  [key=0, label="0.6", weight="0.6"];
+UNOCCUPIED -> UNKNOWN  [key=0, label="0.3", weight="0.3"];
+UNKNOWN -> OCCUPIED_ACTIVE  [key=0, label="0.5", weight="0.5"];
+UNKNOWN -> OCCUPIED_INACTIVE  [key=0, label="0.0", weight="0.0"];
+UNKNOWN -> UNOCCUPIED  [key=0, label="0.26", weight="0.26"];
+UNKNOWN -> UNKNOWN  [key=0, label="0.24", weight="0.24"];
+}

@@ -2,7 +2,7 @@
 #Author: Gayani Udawatta
 #Created Date : 2020/08/29
 #Modified Data: 
-#Description: Call HMM algorithm 
+#Description: Call HMM - Viterbi Algorithm 
 #############################################################################################
 
 
@@ -37,7 +37,7 @@ class States(object):
 
 	def define_initial_states(self):
 		
-		states = ['Transit', 'Active','Short_Inactive','Long_Inactive', 'TR-Long_Inactive']  #long inactive
+		states = ['Transit', 'Active','Short_Inactive','Long_Inactive', 'TR_LongInactive']  #long inactive
 		#Setting up initial probabilities to 0.2  each. total probability is equal to 1.0 
 		pi = [0.2, 0.2, 0.2,0.2,0.2]
 		state_space = pd.Series(pi, index=states, name='states')
@@ -53,20 +53,52 @@ class States(object):
 		q_df.loc[states[3]] = [0.25, 0.25,0.2,0.0, 0.3]
 		q_df.loc[states[4]] = [0.30, 0.25,0.1,0.1,0.25]
 	
-
-		print(q_df)
-
 		q = q_df.values
 		print('\n', q, q.shape, '\n')
 		print(q_df.sum(axis=1))
 
-		edges_wts = self._get_markov_edges(q_df)
+
+		#Transition probability graph section.....
+
+		graph_edges = ['T', 'A' , 'SI' , 'LI' , 'TL']
+		q_df_graph = pd.DataFrame(columns=graph_edges, index=graph_edges)
+		q_df_graph.loc[graph_edges[0]] = [0.0, 0.3,0.2,0.25, 0.25]
+		q_df_graph.loc[graph_edges[1]] = [0.2, 0,0.25,0.25, 0.3]
+		q_df_graph.loc[graph_edges[2]] = [0.1, 0.3,0,0.2,0.4]
+		q_df_graph.loc[graph_edges[3]] = [0.25, 0.25,0.2,0.0, 0.3]
+		q_df_graph.loc[graph_edges[4]] = [0.30, 0.25,0.1,0.1,0.25]
+		
+
+		print('Graph section...........')
+		print(q_df_graph)		
+		edges_wts = self._get_markov_edges(q_df_graph)
 		pprint(edges_wts)
 
-		
-		P = np.array([[0.0, 0.3, 0.2, 0.25, 0.25] , [0.2, 0.0, 0.25, 0.25, 0.3] , [0.1, 0.3, 0.0, 0.2, 0.4] , [0.25, 0.25, 0.2, 0.0, 0.3] , [0.30, 0.25, 0.1, 0.1 ,0.25]]) # Transition matrix
-		mc = MarkovChain(P, ['T', 'A' , 'SI' , 'LI' , 'TL'])
-		mc.draw()
+		# create graph object
+		G = nx.MultiDiGraph()
+
+		# nodes correspond to states
+		G.add_nodes_from(graph_edges)
+		print(f'Nodes:\n{G.nodes()}\n')
+
+		# edges represent transition probabilities
+		for k, v in edges_wts.items():
+			tmp_origin, tmp_destination = k[0], k[1]
+			G.add_edge(tmp_origin, tmp_destination, weight=v, label=v)
+	  
+
+		pos = nx.drawing.nx_pydot.graphviz_layout(G, prog='dot')
+		nx.draw_networkx(G, pos)
+		print(f'Edges:')
+		pprint(G.edges(data=True))  
+
+		# create edge labels for jupyter plot but is not necessary
+		edge_labels = {(n1,n2):d['label'] for n1,n2,d in G.edges(data=True)}
+		nx.draw_networkx_edge_labels(G , pos, edge_labels=edge_labels)
+		nx.drawing.nx_pydot.write_dot(G, 'initial_states_Markov.dot')
+
+        
+		#End of the graph section
 
 		return states
 
@@ -89,10 +121,50 @@ class States(object):
 
 		print(a_df)
 
+		#Transition probability graph section.....
+		
+		a_df_hidden_edges = pd.DataFrame(columns=hidden_states, index=hidden_states)
+		a_df_hidden_edges.loc[hidden_states[0]] = [0.5, 0.2,0.1,0.2]
+		a_df_hidden_edges.loc[hidden_states[1]] = [0.3, 0.6, 0.0, 0.1]
+		a_df_hidden_edges.loc[hidden_states[2]] = [0.1, 0.0, 0.6, 0.3]
+		a_df_hidden_edges.loc[hidden_states[3]] = [0.5, 0.0, 0.26, 0.24]
+		
+
+		print('Graph section for hidden transition matrix...........')
+		print(a_df_hidden_edges)		
+		edges_wts = self._get_markov_edges(a_df_hidden_edges)
+		pprint(edges_wts)
+
+		# create graph object
+		G = nx.MultiDiGraph()
+
+		# nodes correspond to states
+		G.add_nodes_from(hidden_states)
+		print(f'Nodes:\n{G.nodes()}\n')
+
+		# edges represent transition probabilities
+		for k, v in edges_wts.items():
+			tmp_origin, tmp_destination = k[0], k[1]
+			G.add_edge(tmp_origin, tmp_destination, weight=v, label=v)
+	  
+
+		pos = nx.drawing.nx_pydot.graphviz_layout(G, prog='dot')
+		nx.draw_networkx(G, pos)
+		print(f'Edges:')
+		pprint(G.edges(data=True))  
+
+		# create edge labels for jupyter plot but is not necessary
+		edge_labels = {(n1,n2):d['label'] for n1,n2,d in G.edges(data=True)}
+		nx.draw_networkx_edge_labels(G , pos, edge_labels=edge_labels)
+		nx.drawing.nx_pydot.write_dot(G, 'hidden_states_Markov.dot')
+
+		#end of hidden transition probability graph section-------------
+
+
 		a = a_df.values
 		print('\n', a, a.shape, '\n')
 		print(a_df.sum(axis=1))
-		states = ['Transit', 'Active','Short_Inactive','Long_Inactive', 'TR-Long_Inactive']   #long inactive
+		states = ['Transit', 'Active','Short_Inactive','Long_Inactive', 'TR_LongInactive']   #long inactive
 
 		observable_states = states
 
@@ -106,13 +178,13 @@ class States(object):
 		print(b_df)
 		b = b_df.values
 
+		#----------------------------Emission probability graph section-------------------------------
 		#creating graph edges and weights
 		hide_edges_wts = self._get_markov_edges(a_df)
 		pprint(hide_edges_wts)
 
 		emit_edges_wts = self._get_markov_edges(b_df)
 		pprint(emit_edges_wts)
-
 
 		#creating the graph object
 		# create graph object
@@ -133,30 +205,23 @@ class States(object):
 		    G.add_edge(tmp_origin, tmp_destination, weight=v, label=v)
 		    
 		print(f'Edges:')
-		pprint(G.edges(data=True))  
+		pprint(G.edges(data=True))  		
 
 
-		# P = np.array([[0.5, 0.2,0.1,0.2],[0.3, 0.6, 0.0, 0.1] , [0.1, 0.0, 0.6, 0.3], [0.5, 0.0, 0.26, 0.24] ]) # Transition matrix
-		# mc = MarkovChain(P, ['OA', 'OI' , 'UO' , 'UK' ])
-		# mc.draw()
+		pos = nx.drawing.nx_pydot.graphviz_layout(G, prog='neato')
+		nx.draw_networkx(G, pos)
 
+		# # create the plot for emmission probabilities 
+		emit_edge_labels = {(n1,n2):d['label'] for n1,n2,d in G.edges(data=True)}
+		nx.draw_networkx_edge_labels(G , pos, edge_labels=emit_edge_labels)
+		nx.drawing.nx_pydot.write_dot(G, 'emission__markov.dot')
 
-
-		# pos = nx.drawing.nx_pydot.graphviz_layout(G, prog='neato')
-		# nx.draw_networkx(G, pos)
-
-		# # # create edge labels for jupyter plot but is not necessary
-		# emit_edge_labels = {(n1,n2):d['label'] for n1,n2,d in G.edges(data=True)}
-		# nx.draw_networkx_edge_labels(G , pos, edge_labels=emit_edge_labels)
-		# nx.drawing.nx_pydot.write_dot(G, 'pet_dog_hidden_markov.dot')
-
-
+		#---------------------------------end of Emission probability graph section------------------------------------
 
 		row_id, duration_min, obs, obs_seq = self.get_space_occupancy(Facility_No,space)
-
 		path, delta, phi = self.Viterbi(pi, a, b, obs)
 		#np.set_printoptions(suppress=True)
-		#print('\nsingle best state path: \n', path)
+		print('\nsingle best state path: \n', path)
 		#print('delta:\n', delta)
 		
 		#np.set_printoptions(suppress=True) 
@@ -167,12 +232,19 @@ class States(object):
 	
 		df_xv = pd.DataFrame(xv)		
 		
-		#pd.set_option('display.max_rows', 100)
+		pd.set_option('display.max_rows', 100)
 		#print('phi:\n', phi)
+		
+		print( pd.DataFrame(np.column_stack([obs, obs_seq]), 
+                columns=['Obs_code', 'Obs_seq']) )
 		
 
 		state_map = { 0:'OCCUPIED_ACTIVE',1:'OCCUPIED_INACTIVE',2:'UNOCCUPIED',3:'UNKNOWN'}
 		state_path = [state_map[v] for v in path]
+		print(pd.DataFrame()
+		 .assign(Observation=obs_seq)
+		 .assign(Best_Path=state_path))
+
 
 		pds= pd.DataFrame().assign(row_id=row_id).assign(duration_min=duration_min).assign(Observation=obs_seq).assign(Best_Path=state_path)
 		frames = [pds, df_xv]
@@ -180,10 +252,11 @@ class States(object):
 		result.columns = ['row_id','duration_min','Observation','State','OCCUPIED_ACTIVE','OCCUPIED_INACTIVE','UNOCCUPIED','UNKNOWN']
 
 		pd.set_option('display.max_rows', 500)
+		#pd.set_option('display.max_columns', 500)
 		pd.set_option('display.float_format', lambda x: '%.19f' % x)
 		print(result.head(500))
 
-		#insert final result to database
+		#---------------insert final result to database--------------------------------------
 		self.insert_hmm_results(result)		
 	
 		
@@ -194,6 +267,10 @@ class States(object):
 		database = 'HMM_HomeStates' 
 		username = 'sa' 
 		password = '123.123' 
+
+		if (space ==''):
+			space ="ALL"	
+	
 		conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 
 		cmd_prod_executesp = """EXEC   [dbo].[SP_Get_Occupancy_Data_By_Space]  @Facility_No = ?, @Space = ?  """ 
@@ -216,7 +293,8 @@ class States(object):
 
 		cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 		cursor = cnxn.cursor()
-				
+		#delete existing records from the table before inserting new results
+		cursor.execute(" Delete from dbo.Hmm_Results")		
 		for index, row in result_df.iterrows():
 			Facility_No = 1
 			id= row.row_id
@@ -256,7 +334,7 @@ class States(object):
 
 	def get_space_occupancy(self, Facility_No, space):
 
-		obs_map = {'Transit' : 0 , 'Active' : 1,'Short_Inactive': 2,'Long_Inactive': 3, 'TR-Long_Inactive' :4 }
+		obs_map = {'Transit' : 0 , 'Active' : 1,'Short_Inactive': 2,'Long_Inactive': 3, 'TR_LongInactive' :4 }
 
 		df = self.get_space_data(Facility_No,space)
 
@@ -282,9 +360,10 @@ class States(object):
 
 ex = States()
 #ex.get_space_occupancy(1,'kitchen')
-ex.get_hidden_states(1,'kitchen')
+ex.get_hidden_states(1,'')
+#ex.define_initial_states()
 
 #print(ex.get_space_data_test('kitchen', 1))
-#print(ex.get_space_data(1,'kitchen'))
+#print(ex.get_space_data(1,''))
 
 

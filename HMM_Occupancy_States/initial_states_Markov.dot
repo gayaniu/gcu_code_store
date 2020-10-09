@@ -1,0 +1,32 @@
+digraph  {
+T;
+A;
+SI;
+LI;
+TL;
+T -> T  [key=0, label="0.0", weight="0.0"];
+T -> A  [key=0, label="0.3", weight="0.3"];
+T -> SI  [key=0, label="0.2", weight="0.2"];
+T -> LI  [key=0, label="0.25", weight="0.25"];
+T -> TL  [key=0, label="0.25", weight="0.25"];
+A -> T  [key=0, label="0.2", weight="0.2"];
+A -> A  [key=0, label=0, weight=0];
+A -> SI  [key=0, label="0.25", weight="0.25"];
+A -> LI  [key=0, label="0.25", weight="0.25"];
+A -> TL  [key=0, label="0.3", weight="0.3"];
+SI -> T  [key=0, label="0.1", weight="0.1"];
+SI -> A  [key=0, label="0.3", weight="0.3"];
+SI -> SI  [key=0, label=0, weight=0];
+SI -> LI  [key=0, label="0.2", weight="0.2"];
+SI -> TL  [key=0, label="0.4", weight="0.4"];
+LI -> T  [key=0, label="0.25", weight="0.25"];
+LI -> A  [key=0, label="0.25", weight="0.25"];
+LI -> SI  [key=0, label="0.2", weight="0.2"];
+LI -> LI  [key=0, label="0.0", weight="0.0"];
+LI -> TL  [key=0, label="0.3", weight="0.3"];
+TL -> T  [key=0, label="0.3", weight="0.3"];
+TL -> A  [key=0, label="0.25", weight="0.25"];
+TL -> SI  [key=0, label="0.1", weight="0.1"];
+TL -> LI  [key=0, label="0.1", weight="0.1"];
+TL -> TL  [key=0, label="0.25", weight="0.25"];
+}
